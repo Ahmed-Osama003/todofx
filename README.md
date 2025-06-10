@@ -10,3 +10,4 @@ A simple todo application built with JavaFX..
 -  Clear all tasks  
 -  Double-click to toggle task completion  
 -  Timestamps for task creation  
+-  Set and manage due dates for tasks  
