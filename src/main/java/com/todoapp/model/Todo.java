@@ -9,13 +9,22 @@ public class Todo {
     private LocalDateTime createdAt;
     private LocalDateTime dueDate;
     private String category;
+    private int id;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public Todo(String task) {
         this.task = task;
         this.completed = false;
         this.createdAt = LocalDateTime.now();
-        this.dueDate = null; // No due date by default
-        this.category = "Uncategorized"; // Default category
+        this.dueDate = null;
+        this.category = "Uncategorized";
     }
 
     public Todo(String task, LocalDateTime dueDate) {
@@ -23,7 +32,7 @@ public class Todo {
         this.completed = false;
         this.createdAt = LocalDateTime.now();
         this.dueDate = dueDate;
-        this.category = "Uncategorized"; // Default category
+        this.category = "Uncategorized";
     }
 
     public Todo(String task, LocalDateTime dueDate, String category) {

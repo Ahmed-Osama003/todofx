@@ -30,7 +30,6 @@ public class TodoApp extends Application {
         todoList = FXCollections.observableArrayList();
         filteredTodoList = FXCollections.observableArrayList();
 
-        // Initialize categories with some default values
         categories = FXCollections.observableArrayList(
             "All Categories", "Uncategorized", "Work", "Personal", "Shopping", "Health", "Education"
         );
@@ -56,21 +55,20 @@ public class TodoApp extends Application {
         dueDatePicker.setPromptText("Set due date (optional)");
         dueDatePicker.setPrefHeight(40);
 
-        // Setup category selection for new tasks
+
         categoryComboBox = new ComboBox<>(categories);
-        categoryComboBox.getItems().remove("All Categories"); // Remove "All Categories" from task creation
+        categoryComboBox.getItems().remove("All Categories");
         categoryComboBox.setPromptText("Select category");
         categoryComboBox.setValue("Uncategorized");
         categoryComboBox.setPrefHeight(40);
-        categoryComboBox.setEditable(true); // Allow users to add custom categories
+        categoryComboBox.setEditable(true);
 
-        // Setup category filter
+
         filterComboBox = new ComboBox<>(categories);
         filterComboBox.setValue("All Categories");
         filterComboBox.setPrefHeight(40);
         filterComboBox.setOnAction(e -> filterTodosByCategory());
 
-        // Initialize filtered list with all todos
         filteredTodoList.setAll(todoList);
 
         listView = new ListView<>(filteredTodoList);
@@ -92,7 +90,6 @@ public class TodoApp extends Application {
         Label titleLabel = new Label("My Todo List");
         titleLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
 
-        // Filter section
         HBox filterBox = new HBox(10);
         filterBox.setAlignment(Pos.CENTER);
 
@@ -103,7 +100,6 @@ public class TodoApp extends Application {
         filterBox.getChildren().addAll(filterLabel, filterComboBox);
         HBox.setHgrow(filterComboBox, Priority.ALWAYS);
 
-        // Task input section
         VBox inputSection = new VBox(10);
         inputSection.setAlignment(Pos.CENTER);
 
@@ -117,7 +113,6 @@ public class TodoApp extends Application {
         taskInputBox.getChildren().addAll(taskInput, addButton);
         HBox.setHgrow(taskInput, Priority.ALWAYS);
 
-        // Due date section
         HBox dueDateBox = new HBox(10);
         dueDateBox.setAlignment(Pos.CENTER);
 
@@ -128,7 +123,6 @@ public class TodoApp extends Application {
         dueDateBox.getChildren().addAll(dueDateLabel, dueDatePicker);
         HBox.setHgrow(dueDatePicker, Priority.ALWAYS);
 
-        // Category section
         HBox categoryBox = new HBox(10);
         categoryBox.setAlignment(Pos.CENTER);
 
@@ -174,21 +168,17 @@ public class TodoApp extends Application {
         if (!task.isEmpty()) {
             Todo newTodo;
 
-            // Get the selected category
             String category = categoryComboBox.getValue();
             if (category == null || category.trim().isEmpty()) {
                 category = "Uncategorized";
             }
 
-            // Add the category to the list if it's not already there
             if (!categories.contains(category)) {
                 categories.add(category);
             }
 
-            // Check if a due date was selected
             LocalDate selectedDate = dueDatePicker.getValue();
             if (selectedDate != null) {
-                // Convert LocalDate to LocalDateTime (set time to end of day: 23:59:59)
                 LocalDateTime dueDateTime = LocalDateTime.of(selectedDate, LocalTime.of(23, 59, 59));
                 newTodo = new Todo(task, dueDateTime, category);
             } else {
@@ -197,12 +187,11 @@ public class TodoApp extends Application {
 
             todoList.add(newTodo);
 
-            // Apply filter to update the view
             filterTodosByCategory();
 
             taskInput.clear();
-            dueDatePicker.setValue(null); // Clear the date picker
-            // Don't reset the category - keep it for the next task
+            dueDatePicker.setValue(null);
+
             taskInput.requestFocus();
         }
     }
@@ -216,14 +205,14 @@ public class TodoApp extends Application {
 
     private void toggleTodoCompletion(Todo todo) {
         todo.setCompleted(!todo.isCompleted());
-        filterTodosByCategory(); // Apply filter to update the view
+        filterTodosByCategory();
     }
 
     private void deleteSelectedTodo() {
         Todo selected = listView.getSelectionModel().getSelectedItem();
         if (selected != null) {
             todoList.remove(selected);
-            filterTodosByCategory(); // Apply filter to update the view
+            filterTodosByCategory();
         }
     }
 
@@ -236,7 +225,7 @@ public class TodoApp extends Application {
 
             if (alert.showAndWait().get() == ButtonType.OK) {
                 todoList.clear();
-                filterTodosByCategory(); // Apply filter to update the view
+                filterTodosByCategory();
             }
         }
     }
@@ -244,29 +233,28 @@ public class TodoApp extends Application {
     private void setDueDateForSelectedTodo() {
         Todo selected = listView.getSelectionModel().getSelectedItem();
         if (selected != null) {
-            // Create a dialog for setting the due date
+
             Dialog<LocalDate> dialog = new Dialog<>();
             dialog.setTitle("Set Due Date");
             dialog.setHeaderText("Set a due date for: " + selected.getTask());
 
-            // Set up the buttons
+
             ButtonType setButtonType = new ButtonType("Set", ButtonBar.ButtonData.OK_DONE);
             ButtonType clearButtonType = new ButtonType("Clear Due Date", ButtonBar.ButtonData.LEFT);
             ButtonType cancelButtonType = ButtonType.CANCEL;
             dialog.getDialogPane().getButtonTypes().addAll(setButtonType, clearButtonType, cancelButtonType);
 
-            // Create the date picker
+
             DatePicker datePicker = new DatePicker();
             if (selected.hasDueDate()) {
                 datePicker.setValue(selected.getDueDate().toLocalDate());
             }
 
-            // Set up the dialog content
+
             VBox content = new VBox(10);
             content.getChildren().add(datePicker);
             dialog.getDialogPane().setContent(content);
 
-            // Convert the result
             dialog.setResultConverter(dialogButton -> {
                 if (dialogButton == setButtonType) {
                     return datePicker.getValue();
@@ -276,17 +264,16 @@ public class TodoApp extends Application {
                 return null;
             });
 
-            // Show the dialog and process the result
             dialog.showAndWait().ifPresent(date -> {
                 if (date == null) {
-                    // Clear the due date
+
                     selected.setDueDate(null);
                 } else {
-                    // Set the due date (end of day)
+
                     LocalDateTime dueDateTime = LocalDateTime.of(date, LocalTime.of(23, 59, 59));
                     selected.setDueDate(dueDateTime);
                 }
-                filterTodosByCategory(); // Apply filter to update the view
+                filterTodosByCategory();
             });
         }
     }
@@ -294,14 +281,12 @@ public class TodoApp extends Application {
     private void filterTodosByCategory() {
         String selectedCategory = filterComboBox.getValue();
 
-        // Clear the filtered list
         filteredTodoList.clear();
 
         if (selectedCategory == null || selectedCategory.equals("All Categories")) {
-            // Show all tasks
+
             filteredTodoList.addAll(todoList);
         } else {
-            // Filter tasks by the selected category
             for (Todo todo : todoList) {
                 if (todo.getCategory().equals(selectedCategory)) {
                     filteredTodoList.add(todo);
@@ -313,27 +298,25 @@ public class TodoApp extends Application {
     private void setCategoryForSelectedTodo() {
         Todo selected = listView.getSelectionModel().getSelectedItem();
         if (selected != null) {
-            // Create a dialog for setting the category
+
             Dialog<String> dialog = new Dialog<>();
             dialog.setTitle("Set Category");
             dialog.setHeaderText("Set a category for: " + selected.getTask());
 
-            // Set up the buttons
             ButtonType setButtonType = new ButtonType("Set", ButtonBar.ButtonData.OK_DONE);
             ButtonType cancelButtonType = ButtonType.CANCEL;
             dialog.getDialogPane().getButtonTypes().addAll(setButtonType, cancelButtonType);
 
-            // Create the category combo box
             ComboBox<String> categoryPicker = new ComboBox<>(categories);
             categoryPicker.setEditable(true);
             categoryPicker.setValue(selected.getCategory());
 
-            // Set up the dialog content
+
             VBox content = new VBox(10);
             content.getChildren().add(categoryPicker);
             dialog.getDialogPane().setContent(content);
 
-            // Convert the result
+
             dialog.setResultConverter(dialogButton -> {
                 if (dialogButton == setButtonType) {
                     return categoryPicker.getValue();
@@ -341,17 +324,17 @@ public class TodoApp extends Application {
                 return null;
             });
 
-            // Show the dialog and process the result
+
             dialog.showAndWait().ifPresent(category -> {
                 if (category != null && !category.trim().isEmpty()) {
-                    // Add the category to the list if it's not already there
+
                     if (!categories.contains(category)) {
                         categories.add(category);
                     }
 
-                    // Set the category
+
                     selected.setCategory(category);
-                    filterTodosByCategory(); // Apply filter to update the view
+                    filterTodosByCategory();
                 }
             });
         }
