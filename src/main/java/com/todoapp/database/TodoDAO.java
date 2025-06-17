@@ -50,5 +50,42 @@ public class TodoDAO {
         return todos;
     }
 
-    
+    public static void updateTodo(Todo todo) {
+        String sql = "UPDATE todos SET task=?, completed=?, due_date=?, category=? WHERE id=?";
+
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, todo.getTask());
+            stmt.setBoolean(2, todo.isCompleted());
+            stmt.setString(3, todo.getDueDate() != null ? todo.getDueDate().format(formatter) : null);
+            stmt.setString(4, todo.getCategory());
+            stmt.setInt(5, todo.getId());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void deleteTodo(int id) {
+        String sql = "DELETE FROM todos WHERE id=?";
+
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void deleteAll() {
+        String sql = "DELETE FROM todos";
+        try (Connection conn = DatabaseManager.getConnection();
+             Statement stmt = conn.createStatement()) {
+            stmt.executeUpdate(sql);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }
