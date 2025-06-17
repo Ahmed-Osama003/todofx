@@ -29,14 +29,11 @@ public class TodoApp extends Application {
     private ComboBox<String> filterComboBox;
     private ObservableList<String> categories;
 
-    private TodoDAO todoDAO;
-
     @Override
     public void start(Stage primaryStage) {
         // Initialize database before any operations
         DatabaseManager.initializeDatabase();
-        todoDAO = new TodoDAO();
-        List<Todo> loadedTodos = todoDAO.getAllTodos();
+        List<Todo> loadedTodos = TodoDAO.getAllTodos();
         todoList = FXCollections.observableArrayList(loadedTodos);
         filteredTodoList = FXCollections.observableArrayList();
 
@@ -169,7 +166,7 @@ public class TodoApp extends Application {
                 newTodo = new Todo(task, category);
             }
 
-            todoDAO.insertTodo(newTodo);
+            TodoDAO.insertTodo(newTodo);
             todoList.add(newTodo);
             filterTodosByCategory();
             taskInput.clear();
@@ -187,14 +184,14 @@ public class TodoApp extends Application {
 
     private void toggleTodoCompletion(Todo todo) {
         todo.setCompleted(!todo.isCompleted());
-        todoDAO.updateTodo(todo);
+        TodoDAO.updateTodo(todo);
         filterTodosByCategory();
     }
 
     private void deleteSelectedTodo() {
         Todo selected = listView.getSelectionModel().getSelectedItem();
         if (selected != null) {
-            todoDAO.deleteTodo(selected.getId());
+            TodoDAO.deleteTodo(selected.getId());
             todoList.remove(selected);
             filterTodosByCategory();
         }
@@ -207,7 +204,7 @@ public class TodoApp extends Application {
             alert.setHeaderText("Are you sure?");
             alert.setContentText("This will delete all tasks. This action cannot be undone.");
             if (alert.showAndWait().get() == ButtonType.OK) {
-                todoDAO.deleteAll();
+                TodoDAO.deleteAll();
                 todoList.clear();
                 filterTodosByCategory();
             }
@@ -249,7 +246,7 @@ public class TodoApp extends Application {
                 } else {
                     selected.setDueDate(LocalDateTime.of(date, LocalTime.of(23, 59, 59)));
                 }
-                todoDAO.updateTodo(selected);
+                TodoDAO.updateTodo(selected);
                 filterTodosByCategory();
             });
         }
@@ -285,7 +282,7 @@ public class TodoApp extends Application {
                         categories.add(category);
                     }
                     selected.setCategory(category);
-                    todoDAO.updateTodo(selected);
+                    TodoDAO.updateTodo(selected);
                     filterTodosByCategory();
                 }
             });

@@ -11,3 +11,6 @@ A simple todo application built with JavaFX..
 -  Double-click to toggle task completion  
 -  Timestamps for task creation  
 -  Set and manage due dates for tasks  
+-  Persistent storage using SQLite database
+-  Categories for organizing tasks
+-  Filter tasks by category
