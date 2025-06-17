@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TodoDAO {
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     public static void insertTodo(Todo todo) {
         String sql = "INSERT INTO todos (task, completed, created_at, due_date, category) VALUES (?, ?, ?, ?, ?)";
 
@@ -25,4 +24,5 @@ public class TodoDAO {
             e.printStackTrace();
         }
     }
+
 }
