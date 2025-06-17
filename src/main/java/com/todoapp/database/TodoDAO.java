@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TodoDAO {
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
     public static void insertTodo(Todo todo) {
         String sql = "INSERT INTO todos (task, completed, created_at, due_date, category) VALUES (?, ?, ?, ?, ?)";
 
@@ -24,5 +26,29 @@ public class TodoDAO {
             e.printStackTrace();
         }
     }
+    public static List<Todo> getAllTodos() {
+        List<Todo> todos = new ArrayList<>();
+        String sql = "SELECT * FROM todos";
 
+        try (Connection conn = DatabaseManager.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                Todo todo = new Todo(rs.getString("task"),
+                        rs.getString("category"));
+                todo.setCompleted(rs.getBoolean("completed"));
+                todo.setId(rs.getInt("id"));
+                todo.setDueDate(rs.getString("due_date") != null ?
+                        LocalDateTime.parse(rs.getString("due_date"), formatter) : null);
+                todos.add(todo);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return todos;
+    }
+
+    
 }
