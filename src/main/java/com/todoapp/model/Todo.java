@@ -8,12 +8,14 @@ public class Todo {
     private boolean completed;
     private LocalDateTime createdAt;
     private LocalDateTime dueDate;
+    private String category;
 
     public Todo(String task) {
         this.task = task;
         this.completed = false;
         this.createdAt = LocalDateTime.now();
         this.dueDate = null; // No due date by default
+        this.category = "Uncategorized"; // Default category
     }
 
     public Todo(String task, LocalDateTime dueDate) {
@@ -21,6 +23,23 @@ public class Todo {
         this.completed = false;
         this.createdAt = LocalDateTime.now();
         this.dueDate = dueDate;
+        this.category = "Uncategorized"; // Default category
+    }
+
+    public Todo(String task, LocalDateTime dueDate, String category) {
+        this.task = task;
+        this.completed = false;
+        this.createdAt = LocalDateTime.now();
+        this.dueDate = dueDate;
+        this.category = category;
+    }
+
+    public Todo(String task, String category) {
+        this.task = task;
+        this.completed = false;
+        this.createdAt = LocalDateTime.now();
+        this.dueDate = null;
+        this.category = category;
     }
 
     public String getTask() {
@@ -51,6 +70,14 @@ public class Todo {
         this.dueDate = dueDate;
     }
 
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
     public String getFormattedDate() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm");
         return createdAt.format(formatter);
@@ -72,9 +99,9 @@ public class Todo {
     public String toString() {
         String status = completed ? "✓" : "○";
         if (hasDueDate()) {
-            return String.format("%s %s (Created: %s, Due: %s)", status, task, getFormattedDate(), getFormattedDueDate());
+            return String.format("%s [%s] %s (Created: %s, Due: %s)", status, category, task, getFormattedDate(), getFormattedDueDate());
         } else {
-            return String.format("%s %s (Created: %s)", status, task, getFormattedDate());
+            return String.format("%s [%s] %s (Created: %s)", status, category, task, getFormattedDate());
         }
     }
 }
